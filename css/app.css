@@ -1,0 +1,48 @@
+.panel-box {
+  background: #222;
+  color: #eee;
+  padding: 8px;
+  margin-top: 10px;
+  border-radius: 8px;
+  font-family: 'VT323', monospace;
+}
+.panel-box h3 { margin: 0 0 5px 0; color: #9f6; }
+.recommendation {
+  border-top: 1px solid #444;
+  margin-top: 6px; padding-top: 4px;
+}
+.recommendation small { color: #aaa; }
+
+
+/* Botón ayuda “?” pequeño */
+.btn-help{
+  margin-left:6px; transform:translateY(-1px);
+  width:22px; height:22px; border-radius:50%;
+  border:1px solid #31439a; background:#0e1430; color:#e8f0ff;
+  font:700 12px/1 system-ui; cursor:pointer;
+}
+.btn-help:hover{ outline:2px solid #6e8dff; }
+
+/* Modal */
+.ac-modal{ position:fixed; inset:0; display:none; z-index:10000; }
+.ac-modal[aria-hidden="false"]{ display:block; }
+.ac-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.5); }
+.ac-modal__panel{
+  position:relative; margin:6vh auto; max-width:720px; width:92%;
+  background:linear-gradient(180deg,#131a2b,#0f1526);
+  border:1px solid #1b2650; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.45);
+  color:#e8f0ff;
+}
+.ac-modal__hd{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #1b2650; }
+.ac-modal__title{ font-family:"VT323", monospace; font-size:22px; margin:0; }
+.ac-modal__close{
+  border:1px solid #31439a; background:#243480; color:#fff; width:28px; height:28px; border-radius:8px; cursor:pointer;
+}
+.ac-modal__bd{ padding:14px 16px; }
+.ac-modal__content{
+  margin:0; white-space:pre-wrap; font:12px/1.35 system-ui,Segoe UI,Roboto,Arial; color:#e8f0ff;
+  background:#0e1430; border:1px solid #293a86; border-radius:10px; padding:10px;
+}
+.ac-modal__ft{ padding:12px 16px; border-top:1px solid #1b2650; display:flex; justify-content:flex-end; }
+
+

@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "name": "Riego por goteo sectorizado",
+    "condition": {
+      "precip_mm_max": 900
+    },
+    "rationale": "Precipitaciones bajas exigen optimizar el uso de agua con riego por goteo sectorizado.",
+    "actions": ["Instalar válvulas por sector", "Usar filtro y programador básico"],
+    "impact": {"agua": "+35%", "riesgo": "-5%"},
+    "cost_range_clp": "600.000–1.200.000"
+  },
+  {
+    "id": 2,
+    "name": "Microaspersión antiheladas",
+    "condition": {
+      "frost_days_min": 15
+    },
+    "rationale": "Número alto de heladas estimadas; conviene microaspersión para proteger frutales.",
+    "actions": ["Instalar boquillas antiheladas", "Sensor T° crítico"],
+    "impact": {"riesgo": "-40%"},
+    "cost_range_clp": "800.000–1.800.000 por ha"
+  },
+  {
+    "id": 3,
+    "name": "Invernadero tipo túnel",
+    "condition": {
+      "tmin_max": 6
+    },
+    "rationale": "Temperaturas mínimas bajas favorecen la instalación de túneles plásticos.",
+    "actions": ["Cubierta térmica", "Ventilación cenital"],
+    "impact": {"producción": "+25%", "riesgo": "-20%"},
+    "cost_range_clp": "1.5–3.0 millones"
+  },
+  {
+    "id": 4,
+    "name": "Curvas de nivel y terrazas",
+    "condition": {
+      "pendiente_min": 12
+    },
+    "rationale": "Pendiente significativa: importante conservar suelo con curvas de nivel.",
+    "actions": ["Diseñar curvas", "Cobertura vegetal permanente"],
+    "impact": {"agua": "+10%", "riesgo": "-15%"},
+    "cost_range_clp": "300.000–900.000"
+  },
+  {
+    "id": 5,
+    "name": "Diversificación con berries resistentes",
+    "condition": {
+      "precip_mm_min": 900,
+      "tmax_max": 22
+    },
+    "rationale": "Clima húmedo y templado permite integrar berries patrimoniales.",
+    "actions": ["Arándano o frambuesa", "Mulch y goteo"],
+    "impact": {"producción": "+20%"},
+    "cost_range_clp": "variable según superficie"
+  }
+]

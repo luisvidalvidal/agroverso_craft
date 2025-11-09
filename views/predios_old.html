@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Agroverso Craft – Predios</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/app.css">
+<style>
+  .layout{max-width:1100px;margin:24px auto;padding:0 16px;color:#e8f0ff}
+  .grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
+  .card{background:#11182c;border:1px solid #24315f;border-radius:12px}
+  .card .hd{padding:12px 14px;border-bottom:1px solid #24315f;font-weight:700}
+  .card .bd{padding:12px 14px}
+  .list{display:grid;gap:10px}
+  .row{display:grid;grid-template-columns:60px 1fr 220px 170px 160px;gap:8px;align-items:center;border:1px solid #24315f;border-radius:10px;padding:8px}
+  .row small{opacity:.8}
+  .row .act{display:flex;gap:6px}
+  .btn{padding:8px 10px;border-radius:8px;border:1px solid #2e3e86;background:#243480;color:#fff;cursor:pointer}
+  .btn.light{background:transparent;color:#cdd6ff;border-color:#2e3e86}
+  .toolbar{display:flex;gap:8px;margin-bottom:10px}
+  input[type="text"]{padding:8px;border-radius:8px;border:1px solid #2e3e86;background:#0e1430;color:#e8f0ff}
+  .error{color:#ff9a9a;font-size:.9rem}
+  .ok{color:#9f6;font-size:.9rem}
+  /* Modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:9999}
+  .modal[open]{display:flex}
+  .modal .panel{width:min(520px,92vw);background:#0f1733;border:1px solid #2a3b73;border-radius:12px}
+  .modal .hd,.modal .ft{padding:12px 14px;border-bottom:1px solid #2a3b73}
+  .modal .ft{border-top:1px solid #2a3b73;border-bottom:none;display:flex;gap:8px;justify-content:flex-end}
+  .modal .bd{padding:12px 14px;display:grid;gap:8px}
+</style>
+</head>
+<body>
+<div class="layout">
+  <h1>Predios</h1>
+  <div class="grid">
+    <!-- Lista -->
+    <div class="card">
+      <div class="hd">Listado</div>
+      <div class="bd">
+        <div class="toolbar">
+          <input type="text" id="q" placeholder="Buscar por nombre o dirección" style="flex:1">
+          <button class="btn light" id="btn-buscar">Buscar</button>
+          <button class="btn" id="btn-nuevo">+ Nuevo</button>
+        </div>
+        <div id="msg-list" class="error" style="display:none"></div>
+        <div class="list" id="predios-list">Cargando…</div>
+      </div>
+    </div>
+    <!-- Crear rápido -->
+    <div class="card">
+      <div class="hd">Crear nuevo predio</div>
+      <div class="bd">
+        <form id="form-create" style="display:grid;gap:8px">
+          <input id="c-nombre" type="text" placeholder="Nombre" required>
+          <input id="c-direccion" type="text" placeholder="Dirección (opcional)">
+          <div style="display:flex;gap:8px">
+            <input id="c-lat" type="text" placeholder="Lat (-39.82 o '-39.82,-73.23')">
+            <input id="c-lng" type="text" placeholder="Lng (-73.23)">
+          </div>
+          <label style="display:flex;gap:8px;align-items:center">
+            <input id="c-world" type="checkbox" checked> Inicializar mundo (20×20 “soil”)
+          </label>
+          <button class="btn" type="submit">Crear</button>
+          <div id="msg-create" class=""></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar -->
+<dialog id="modal-edit" class="modal">
+  <div class="panel">
+    <div class="hd">Editar predio</div>
+    <div class="bd">
+      <input type="hidden" id="e-id">
+      <input id="e-nombre" type="text" placeholder="Nombre">
+      <input id="e-direccion" type="text" placeholder="Dirección">
+      <div style="display:flex;gap:8px">
+        <input id="e-lat" type="text" placeholder="Lat">
+        <input id="e-lng" type="text" placeholder="Lng">
+      </div>
+      <div id="msg-edit" class=""></div>
+    </div>
+    <div class="ft">
+      <button class="btn light" id="btn-cerrar-edit">Cancelar</button>
+      <button class="btn" id="btn-guardar-edit">Guardar</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// ==== Config base ====
+function detectApiBase(){ const m=location.pathname.match(/^\/([^/]+)/); const root=m?`/${m[1]}`:''; return `${root}/api`; }
+const API_BASE = detectApiBase();
+const APP_BASE = location.pathname.split('/').slice(0,2).join('/');
+
+// ==== Helpers ====
+async function asJSON(res){
+  const ct = res.headers.get('content-type')||'';
+  if (!ct.includes('application/json')) throw new Error(`Respuesta no JSON (${res.status})`);
+  return res.json();
+}
+function showMsg(el, text, ok=false){ el.style.display='block'; el.className = ok?'ok':'error'; el.textContent = text; }
+
+// ==== Cargar lista ====
+async function loadList(q=''){
+  const list = document.getElementById('predios-list');
+  const msg  = document.getElementById('msg-list');
+  msg.style.display='none';
+  list.textContent = 'Cargando…';
+  try{
+    const url = `${API_BASE}/predios/list.php${q?`?q=${encodeURIComponent(q)}`:''}`;
+    const data = await fetch(url).then(asJSON);
+    if(!data.ok){ showMsg(msg, data.error||'Error API'); list.textContent=''; return; }
+    if(!data.data || !data.data.length){ list.textContent='Sin resultados.'; return; }
+    list.innerHTML = data.data.map(p=>`
+      <div class="row">
+        <div>#${p.id}</div>
+        <div><strong>${p.nombre||'(sin nombre)'}</strong><br><small>${p.direccion||''}</small></div>
+        <div><small>Lat: ${p.lat??'-'} | Lng: ${p.lng??'-'}</small></div>
+        <div><small>Actualizado: ${p.updated_at??'-'}</small></div>
+        <div class="act">
+          <button class="btn light" onclick="openSandbox(${p.id})">Abrir</button>
+          <button class="btn light" onclick="openEdit(${p.id})">Editar</button>
+          <button class="btn" onclick="delPredio(${p.id})">Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){ showMsg(msg, 'Error: '+e.message); list.textContent=''; }
+}
+window.openSandbox = (id)=> location.href = `${APP_BASE}/views/mockup.html?predio_id=${id}`;
+
+// ==== Crear ====
+document.getElementById('form-create').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const msg = document.getElementById('msg-create');
+  msg.textContent='Creando…'; msg.className='';
+  let nombre = document.getElementById('c-nombre').value.trim();
+  let dir    = document.getElementById('c-direccion').value.trim();
+  let lat    = document.getElementById('c-lat').value.trim();
+  let lng    = document.getElementById('c-lng').value.trim();
+  const withWorld = document.getElementById('c-world').checked;
+
+  if (lat && !lng && lat.includes(',')) {
+    const parts = lat.split(','); if (parts.length>=2){ lat=parts[0].trim(); lng=parts[1].trim(); }
+  }
+  try{
+    const data = await fetch(`${API_BASE}/predios/create.php`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ nombre, direccion:dir, lat, lng, user_id:1, with_world_grid_default:withWorld })
+    }).then(asJSON);
+    if(!data.ok) { showMsg(msg, 'Error: '+(data.error||'desconocido')); return; }
+    showMsg(msg, 'Creado correctamente', true);
+    await loadList(document.getElementById('q').value.trim());
+  }catch(e){ showMsg(msg, 'Error: '+e.message); }
+});
+
+// ==== Editar ====
+async function openEdit(id){
+  const dlg = document.getElementById('modal-edit');
+  const msg = document.getElementById('msg-edit'); msg.textContent='';
+  try{
+    const data = await fetch(`${API_BASE}/predios/get.php?id=${id}`).then(asJSON);
+    if(!data.ok) throw new Error(data.error||'No encontrado');
+    document.getElementById('e-id').value = data.data.id;
+    document.getElementById('e-nombre').value = data.data.nombre||'';
+    document.getElementById('e-direccion').value = data.data.direccion||'';
+    document.getElementById('e-lat').value = data.data.lat ?? '';
+    document.getElementById('e-lng').value = data.data.lng ?? '';
+    dlg.setAttribute('open','');
+  }catch(e){ alert('No se pudo cargar: '+e.message); }
+}
+document.getElementById('btn-cerrar-edit').addEventListener('click', ()=> {
+  document.getElementById('modal-edit').removeAttribute('open');
+});
+document.getElementById('btn-guardar-edit').addEventListener('click', async ()=>{
+  const msg = document.getElementById('msg-edit'); msg.textContent='Guardando…';
+  const id  = parseInt(document.getElementById('e-id').value,10);
+  const nombre = document.getElementById('e-nombre').value.trim();
+  const direccion = document.getElementById('e-direccion').value.trim();
+  const lat = document.getElementById('e-lat').value.trim();
+  const lng = document.getElementById('e-lng').value.trim();
+  try{
+    const data = await fetch(`${API_BASE}/predios/update.php`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ id, nombre, direccion, lat, lng })
+    }).then(asJSON);
+    if(!data.ok) { showMsg(msg, 'Error: '+(data.error||'desconocido')); return; }
+    showMsg(msg, 'Guardado', true);
+    document.getElementById('modal-edit').removeAttribute('open');
+    await loadList(document.getElementById('q').value.trim());
+  }catch(e){ showMsg(msg, 'Error: '+e.message); }
+});
+
+// ==== Eliminar ====
+async function delPredio(id){
+  if(!confirm(`¿Eliminar predio #${id}? Esta acción no se puede deshacer.`)) return;
+  try{
+    const data = await fetch(`${API_BASE}/predios/delete.php`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ id })
+    }).then(asJSON);
+    if(!data.ok) { alert('Error: '+(data.error||'desconocido')); return; }
+    await loadList(document.getElementById('q').value.trim());
+  }catch(e){ alert('Error: '+e.message); }
+}
+window.delPredio = delPredio;
+
+// ==== Buscar / inicial ====
+document.getElementById('btn-buscar').addEventListener('click', ()=>{
+  loadList(document.getElementById('q').value.trim());
+});
+window.addEventListener('DOMContentLoaded', ()=> loadList());
+</script>
+</body>
+</html>

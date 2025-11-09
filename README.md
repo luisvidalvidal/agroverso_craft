@@ -1,4 +1,3 @@
-# agroverso_craft
 🎮 Serious Games
 
 "Agroverso Craft" es un sandbox inicial para el desarrollo de un Serious Game orientado a la agricultura campesina.
@@ -96,3 +95,4 @@ se encuentran protegidos bajo **Creative Commons BY-NC-ND 4.0**
 
 Licensed under Creative Commons BY-NC-ND 4.0.
 © 2025 Agroverso / Nestte SpA — All rights reserved.
+

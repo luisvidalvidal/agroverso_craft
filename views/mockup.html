@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agroverso Craft – Mockup Visual (Pixel-Art)</title>
+
+<script>
+  (function(){
+    const p = new URLSearchParams(location.search).get('predio_id');
+    if (p) document.getElementById('predio-tag').textContent = 'Predio #' + p;
+  })();
+</script>
+
+
+
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+<!-- CSS local (si este HTML está en /views/, subir un nivel) -->
+<link rel="stylesheet" href="../css/app.css">
+
+
+<style>
+  :root{
+    --bg:#0b0f1a; --panel:#131a2b; --panel2:#0f1526; --ink:#e8f0ff; --muted:#9fb3ff; --acc:#76a8ff; --grid:#0c1222;
+    --tile:24px; --radius:14px; --shadow:0 8px 26px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;}
+  body{margin:0;background:radial-gradient(1200px 700px at 10% 0%,#0f1a33 0,#0b0f1a 60%);color:var(--ink);font:16px/1.3 system-ui,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{max-width:1180px;margin:24px auto;padding:0 16px}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:10px}
+
+  .logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#5b7bff,#8cb6ff);box-shadow:var(--shadow)}
+  h1{font-family:"VT323", monospace;font-size:28px;letter-spacing:.5px;margin:0}
+  
+  .tag{font-family:"VT323";color:#bcd0ff}
+
+  .board{display:grid;grid-template-columns:260px 1fr 270px;gap:14px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid #1b2650;border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card .hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #1b2650}
+  .card .hd h3{font-family:"VT323";margin:0;font-size:22px;color:#e8f0ff}
+  .card .bd{padding:12px 14px}
+
+  /* toolbar */
+  .toolbar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .tool{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px;border:1px solid #263470;background:#0e1430;border-radius:12px;cursor:pointer}
+  .tool.active{outline:2px solid #6e8dff}
+  .swatch{width:28px;height:28px;image-rendering:pixelated}
+  .label{font-size:14px;color:#c9d6ff}
+
+  /* canvas holder */
+  .canvas-wrap{display:flex;justify-content:center;padding:12px}
+  canvas{background:#0b1226;border:1px solid #223060;border-radius:10px;image-rendering:pixelated}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .pill{border:1px solid #2a3b73;background:#0f1733;padding:6px 10px;border-radius:999px;font-size:12px;color:#cfd9ff}
+
+  /* right panel */
+  .metric{display:flex;align-items:center;justify-content:space-between;margin:8px 0}
+  .metric .name{font-family:"VT323";font-size:18px;color:#cbd6ff}
+  .bar{flex:1;height:12px;background:#0b1230;border:1px solid #203069;border-radius:8px;margin-left:10px;position:relative}
+  .bar > span{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#53d86a,#9ae6a3);border-radius:8px}
+  .btns{display:flex;flex-direction: column;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .btn{padding:10px 12px;border-radius:10px;border:1px solid #31439a;background:#243480;color:#fff;cursor:pointer}
+  .btn.light{background:transparent;color:#cdd6ff;border-color:#293a86}
+  .clima{margin-top:6px;font-size:14px;color:#b8c8ff}
+
+  footer{margin:26px 0 34px;text-align:center;color:#a8b8ff;font-size:13px}
+
+  /* efectos flash para estado */
+  .flash-ok { animation: okPulse 600ms ease-out 1; }
+  @keyframes okPulse { 0%{box-shadow:0 0 0 #2ecc71;} 50%{box-shadow:0 0 18px #2ecc71;} 100%{box-shadow:0 0 0 #2ecc71;} }
+  .flash-err { animation: errPulse 800ms ease-out 1; }
+  @keyframes errPulse { 0%{box-shadow:0 0 0 #e74c3c;} 50%{box-shadow:0 0 18px #e74c3c;} 100%{box-shadow:0 0 0 #e74c3c;} }
+</style>
+
+
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"> <!-- <div class="logo"></div>--> <img src="../images/logo.png" height="80"> <h1>Agroverso Craft</h1></div>
+      <div class="tag">Mockup visual – Pixel-art blocks • 20×20</div>
+    </header>
+
+
+    <section class="board">
+
+      <!-- TOOLS -->
+      <div class="card">
+        <div class="hd"><h3>Paleta</h3><div class="tag">click para seleccionar</div></div>
+        <div class="bd">
+          <div class="toolbar" id="toolbar"></div>
+          <div class="legend">
+            <span class="pill">Ctrl/Cmd + clic = borrar</span>
+            <span class="pill">Arrastrar para pintar</span>
+          </div>
+
+
+          <div class="hd"><h3>Serius Games</h3></div>
+          <div class="tag">Agroverso Craft es un Sambox inicial para el desarrollo de un Serius Games, 
+          el que permitirá apoyar la agricultura campesina y transferir investigaciones y 
+          apliación de tecnologia a procesos productivos. <br/>Creado en 24 horas. 9 nov 2025.</div>
+        
+          <div class="hd"><h3>Autores</h3></div>
+          <div class="tag">Luis Vidal Vidal (programador)<br/>Email:lvidal@lek.cl </div>
+          <br />
+          <div class="tag">Ivan Maureira Butler (asesor científico)<br/>Email:imb.007@gmail.com</div>
+          <br/>
+        </div>
+
+      </div>
+
+      <!-- CANVAS -->
+      <div class="card">
+        <div class="hd"><h3>Tu Predio – Sandbox</h3><div class="tag">20×20 tiles</div></div>
+        
+        <div class="bd">
+          <div class="canvas-wrap">
+            <canvas id="world" width="480" height="480"></canvas>
+          </div>
+
+
+        <div id="recs-box" class="panel-box">
+            <h3>🧠 Recomendaciones</h3>
+            <div id="recs-list">Haz clic en “Simular” para obtener sugerencias.</div>
+        </div>
+
+
+        </div>
+      
+      
+
+      
+      
+      </div>
+
+      <!-- PANEL DERECHO -->
+      <div class="card">
+        <div class="hd">
+          <h3>Resultados</h3>
+          <button class="btn light" id="btn-simular">Simular</button>
+        </div>
+
+                  
+
+        <div class="bd">
+
+
+          <div class="metric">
+            <div class="name">Producción
+              <button class="btn-help" data-help-for="bProd" aria-label="Ver explicación Producción">?</button>
+            </div>
+            <div class="bar"><span id="bProd" style="width:62%"></span></div>
+          </div>
+
+          <div class="metric">
+            <div class="name">Efic. hídrica
+              <button class="btn-help" data-help-for="bAgua" aria-label="Ver explicación Eficiencia hídrica">?</button>
+            </div>
+            <div class="bar"><span id="bAgua" style="width:74%"></span></div>
+          </div>
+
+          <div class="metric">
+            <div class="name">Riesgo heladas
+              <button class="btn-help" data-help-for="bHel" aria-label="Ver explicación Riesgo de heladas">?</button>
+            </div>
+            <div class="bar">
+              <span id="bHel" style="width:33%;background:linear-gradient(90deg,#ff7a7a,#ffb3b3)"></span>
+            </div>
+          </div>
+
+
+
+
+          <div class="btns">
+
+            <!--
+              <a href="predios.html" 
+                style="display:inline-block;padding:8px 8px;border:1px solid #31439a;
+                        border-radius:10px;background:#243480;color:#fff;text-decoration:none; font-size:small; text-align:center">
+                🔍 Panel de Predios
+              </a>
+            -->
+              
+            <button class="btn" id="btnClear">Limpiar mapa</button>
+            <button class="btn light" id="btnSnapshot">Capturar imagen</button>
+            <button class="btn" id="btn-climate">Actualizar mundo</button>
+            <button class="btn" id="btn-save-world">Guardar mundo</button>
+            <button class="btn light" id="btn-load-world">Cargar mundo</button>
+            <button class="btn" id="btn-report">📄 Imprimir informe</button>
+
+          </div>
+
+
+
+          <!-- Location -->
+
+          <div class="panel-box" style="margin-top:10px">
+            <h3>📍 Ubicación del predio</h3>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <input id="inp-dir" type="text" placeholder="Dirección (opcional)" style="flex:1; min-width:240px; padding:8px; border-radius:8px; border:1px solid #293a86; background:#0e1430; color:#e8f0ff;">
+              <input id="inp-lat" type="text" placeholder="Lat ej: -39.82" style="width:140px; padding:8px; border-radius:8px; border:1px solid #293a86; background:#0e1430; color:#e8f0ff;">
+              <input id="inp-lng" type="text" placeholder="Lng ej: -73.23" style="width:140px; padding:8px; border-radius:8px; border:1px solid #293a86; background:#0e1430; color:#e8f0ff;">
+              <button class="btn" id="btn-set-loc">Fijar ubicación</button>
+            </div>
+            <small style="color:#9fb3ff; display:block; margin-top:6px">
+              Tip: pega lat,lng desde Google Maps (clic derecho → ¿Qué hay aquí?).
+            </small>
+          </div>
+
+
+
+
+          <!-- Clima + Recs + estados -->
+          <div id="climate-info" class="panel-box" style="margin-top:10px">
+            <h3>🌦️ Clima actual</h3>
+            <p id="climate-data">Sin datos. Usa “Actualizar clima”.</p>
+          </div>
+
+
+        <!--  
+          <div id="recs-box" class="panel-box">
+            <h3>🧠 Recomendaciones</h3>
+            <div id="recs-list">Haz clic en “Simular” para obtener sugerencias.</div>
+          </div>
+        -->
+
+
+          <div id="fx-status" style="margin-top:6px;font-size:12px;color:#9f6;"></div>
+          <div id="last-update" style="margin-top:4px;font-size:12px;color:#bbb;"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>Agroverso © 2025</footer>
+  </div>
+
+<!-- JS local (si este HTML está en /views/, subir un nivel) -->
+<script src="../js/app.js" defer></script>
+
+<!-- ====== JS sandbox original (render pixel-art y acciones de canvas) ====== -->
+<script>
+  const TILE = 24, ROWS = 20, COLS = 20;
+  const canvas = document.getElementById('world');
+  const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
+
+  // ====== Tiles ======
+  const Tiles = {
+    soil:c=>{fill(c,'#6f4f27');shade(c,0,18,'#5d4220');dots(c,'#855f2f');},
+    water:c=>{fill(c,'#1e6fb3');wave(c,'#67b7ff',2);wave(c,'#98d5ff',4);},
+    crop_hort:c=>{fill(c,'#2f8a3a');stripes(c,'#53b45f');},
+    crop_apple:c=>{fill(c,'#2b7f34');dots(c,'#e74c3c');},
+    crop_berries:c=>{fill(c,'#1f7a55');dots(c,'#d24ce7');},
+    greenhouse:c=>{fill(c,'#a5c7ff');glass(c);frame(c,'#eaf2ff');},
+    irrigation:c=>{fill(c,'#2b7f34');gridOverlay(c,'#67b7ff');},
+    slope:c=>{fill(c,'#564024');shade(c,0,12,'#3f2f18');diagonal(c,'#84633a');},
+    biodiversity:c=>{fill(c,'#2f9a4a');dots(c,'#ffe66d');dots(c,'#ff8ac9');},
+    sensor:c=>{fill(c,'#2b2f49');frame(c,'#8aa0ff');led(c,'#76ffb5');}
+  };
+  function fill(c,color){c.fillStyle=color;c.fillRect(0,0,TILE,TILE);}
+  function shade(c,y0,h,color){c.fillStyle=color;c.fillRect(0,y0,TILE,h);}
+  function dots(c,color){c.fillStyle=color;for(let y=4;y<TILE;y+=6){for(let x=3+(y%2)*3;x<TILE;x+=6){c.fillRect(x,y,2,2);}}}
+  function stripes(c,color){c.fillStyle=color;for(let y=3;y<TILE;y+=6){c.fillRect(0,y,TILE,3);}}
+  function gridOverlay(c,color){c.strokeStyle=color;c.lineWidth=2;c.beginPath();for(let x=4;x<TILE;x+=6){c.moveTo(x,0);c.lineTo(x,TILE);}for(let y=4;y<TILE;y+=6){c.moveTo(0,y);c.lineTo(TILE,y);}c.stroke();}
+  function diagonal(c,color){c.strokeStyle=color;c.lineWidth=2;c.beginPath();for(let x=-TILE;x<TILE*2;x+=6){c.moveTo(x,0);c.lineTo(x+TILE,TILE);}c.stroke();}
+  function frame(c,color){c.strokeStyle=color;c.lineWidth=2;c.strokeRect(2,2,TILE-4,TILE-4);}
+  function glass(c){c.fillStyle='rgba(255,255,255,.25)';c.fillRect(3,3,TILE-6,TILE-6);}
+  function wave(c,color,step){c.strokeStyle=color;c.lineWidth=2;c.beginPath();for(let x=0;x<TILE;x+=step){const y=12+Math.sin(x/3)*3;c.lineTo(x,y);}c.stroke();}
+  function led(c,color){c.fillStyle=color;c.fillRect(TILE/2-2,TILE/2-2,4,4);}
+
+  
+  
+  // ====== Toolbar ======
+  const TOOLS=[
+    {key:'soil',label:'Suelo'},{key:'water',label:'Agua'},{key:'crop_hort',label:'Hortalizas'},
+    {key:'crop_apple',label:'Manzanas'},{key:'crop_berries',label:'Berries'},{key:'greenhouse',label:'Invernadero'},
+    {key:'irrigation',label:'Riego'},{key:'biodiversity',label:'Biodiversidad'},{key:'sensor',label:'Nodo IA'},{key:'slope',label:'Pendiente'}
+  ];
+  const toolbar=document.getElementById('toolbar'); let active='crop_apple';
+  TOOLS.forEach(t=>{
+    const c=document.createElement('canvas'); c.width=c.height=TILE;
+    const cc=c.getContext('2d'); cc.imageSmoothingEnabled=false; Tiles[t.key](cc);
+    const div=document.createElement('div'); div.className='tool'+(t.key===active?' active':''); div.dataset.key=t.key;
+    const img=document.createElement('img'); img.className='swatch'; img.src=c.toDataURL();
+    const span=document.createElement('span'); span.className='label'; span.textContent=t.label;
+    div.append(img,span); toolbar.append(div);
+    div.addEventListener('click',()=>{ document.querySelectorAll('.tool').forEach(el=>el.classList.remove('active')); div.classList.add('active'); active=t.key; });
+  });
+
+
+
+
+  // ====== Mundo (global) ======
+  window.world = Array.from({length:ROWS},()=>Array.from({length:COLS},()=> 'soil'));
+
+  // Semilla demo
+  for(let y=6;y<14;y++) for(let x=4;x<16;x++) window.world[y][x]=(y<10?'crop_apple':'crop_berries');
+  for(let x=0;x<COLS;x++) window.world[15][x]='water';
+  window.world[7][7]='greenhouse';window.world[7][8]='greenhouse';window.world[8][7]='greenhouse';window.world[8][8]='greenhouse';
+  window.world[12][12]='irrigation';window.world[12][13]='irrigation';
+  window.world[5][3]='sensor';window.world[5][4]='sensor';
+  window.world[10][2]='slope';window.world[11][2]='slope';
+
+  // ====== Render (global) ======
+  window.drawGrid = function drawGrid(){
+    ctx.fillStyle='#0b1226'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    const W = window.world;
+    for(let y=0;y<ROWS;y++){
+      for(let x=0;x<COLS;x++){
+        const off=document.createElement('canvas'); off.width=off.height=TILE;
+        const oc=off.getContext('2d'); oc.imageSmoothingEnabled=false; Tiles[W[y][x]](oc);
+        ctx.drawImage(off,x*TILE,y*TILE,TILE,TILE);
+        ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.strokeRect(x*TILE,y*TILE,TILE,TILE);
+      }
+    }
+  };
+  window.drawGrid(); // primer dibujado
+
+  // ====== Pintar ======
+  let isDown=false;
+  canvas.addEventListener('mousedown',e=>{isDown=true;paint(e);});
+  canvas.addEventListener('mousemove',e=>{if(isDown)paint(e);});
+  window.addEventListener('mouseup',()=> isDown=false);
+
+  function paint(e){
+    const rect=canvas.getBoundingClientRect();
+    const x=Math.floor((e.clientX-rect.left)/TILE);
+    const y=Math.floor((e.clientY-rect.top)/TILE);
+    if(x<0||x>=COLS||y<0||y>=ROWS) return;
+    const isErase=e.ctrlKey||e.metaKey;
+    window.world[y][x]=isErase?'soil':active;
+    window.drawGrid();
+  }
+
+  // Marcador de cambios para autosave “debounced”
+  window.__worldDirty = false;
+  window.addEventListener('mouseup', () => { window.__worldDirty = true; });
+
+  // ====== Botones canvas ======
+  document.getElementById('btnClear').addEventListener('click',()=>{
+    for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) window.world[y][x]='soil';
+    window.drawGrid();
+  });
+  document.getElementById('btnSnapshot').addEventListener('click',()=>{
+    const url=canvas.toDataURL('image/png');
+    const a=document.createElement('a'); a.href=url; a.download='AgroversoCraft.png'; a.click();
+  });
+
+  // Demo de barras (mientras conectas sim real)
+  
+  //  document.getElementById('btn-simular').addEventListener('click',()=>{
+  //  const prod=55+Math.round(Math.random()*30);
+  //  const agua=60+Math.round(Math.random()*30);
+  //  const hel =15+Math.round(Math.random()*40);
+  //  document.getElementById('bProd').style.width=prod+'%';
+  //  document.getElementById('bAgua').style.width=agua+'%';
+  //  document.getElementById('bHel').style.width = hel + '%';
+  //});
+
+
+</script>
+
+<!-- Modal explicaciones -->
+<div id="ac-modal" class="ac-modal" aria-hidden="true" role="dialog" aria-labelledby="ac-modal-title">
+  <div class="ac-modal__backdrop" data-close></div>
+  <div class="ac-modal__panel" role="document">
+    <div class="ac-modal__hd">
+      <h3 id="ac-modal-title" class="ac-modal__title">Detalle de cálculo</h3>
+      <button class="ac-modal__close" data-close aria-label="Cerrar">×</button>
+    </div>
+    <div class="ac-modal__bd">
+      <pre id="ac-modal-content" class="ac-modal__content"></pre>
+    </div>
+    <div class="ac-modal__ft">
+      <button class="btn" data-close>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
