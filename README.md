@@ -7,11 +7,16 @@ Este prototipo fue desarrollado en 24 horas, el 9 de noviembre de 2025, como par
 
 ⚙️ Autores:
 Luis Vidal Vidal (programador)
+
 Email:lvidal@lek.cl
+
 Linkedin: https://www.linkedin.com/in/luisvidalvidal/
 
+
 Ivan Maureira Butler (asesor científico)
+
 Email:imb.007@gmail.com
+
 Linkedin: https://www.linkedin.com/in/ivan-maureira-butler-11a24763/
 
 
