@@ -6,14 +6,14 @@ Este prototipo fue desarrollado en 24 horas, el 9 de noviembre de 2025, como par
 
 
 ⚙️ Autores:
-Luis Vidal Vidal (programador)
+🧠 Luis Vidal Vidal (programador)
 
 Email:lvidal@lek.cl
 
 Linkedin: https://www.linkedin.com/in/luisvidalvidal/
 
 
-Ivan Maureira Butler (asesor científico)
+🧠 Ivan Maureira Butler (asesor científico)
 
 Email:imb.007@gmail.com
 
@@ -30,44 +30,77 @@ Requisitos previos
 
 ⚙️ Estructura recomendada del proyecto
 - Coloca la carpeta completa del repositorio dentro del directorio htdocs de XAMPP:
+
 xampp/htdocs/agroverso_craft/
+
 │
+
 ├── api/
+
 │   ├── climate/
+
 │   ├── predios/
+
 │   ├── recommendations/
+
 │   └── core/
+
 │
+
 ├── css/
+
 │   └── app.css
+
 ├── js/
+
 │   └── app.js
+
 ├── views/
+
 │   ├── mockup.html
+
 │   └── predios.html
+
 └── README.md
 
 ⚙️ Base de datos (MySQL)
 - Inicia phpMyAdmin y crea una base de datos llamada agroverso_craft.
+  
 - Importa el esquema (si lo tienes) o crea la tabla básica de predios:
 CREATE TABLE predios (
+
   id INT AUTO_INCREMENT PRIMARY KEY,
+
   user_id INT DEFAULT 1,
+
   nombre VARCHAR(255),
+
   direccion VARCHAR(255),
+
   lat DECIMAL(10,7),
+
   lng DECIMAL(10,7),
+
   world_grid JSON NULL,
+
   avg_tmin FLOAT NULL,
+
   avg_tmax FLOAT NULL,
+
   total_prcp_mm FLOAT NULL,
+
   frost_days_est INT NULL,
+
   updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
 );
 
 - Edita el archivo core/db.php con tus credenciales locales:
+
 function db() {
+
   return new PDO('mysql:host=localhost;dbname=agroverso_craft;charset=utf8','root','');
+
 }
 
 
